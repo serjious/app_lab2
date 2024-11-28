@@ -28,6 +28,7 @@ valid_list_file = [
 class TestTandem(unittest.TestCase):
     def test_search_tandem_word(self):
         self.assertEqual(search_tandem_word(test_list), valid_list)
+        self.assertEqual(search_tandem_word(["11", "3333", "BbbB"]), None)
     
     def test_get_list_from_file(self):
         list_tandem = get_list_from_file("tandem.txt")
@@ -35,4 +36,4 @@ class TestTandem(unittest.TestCase):
         self.assertEqual(search_tandem_word(list_tandem), valid_list) 
 
 if __name__ == "__main__":
-    print("Hello")
+    unittest.main()
