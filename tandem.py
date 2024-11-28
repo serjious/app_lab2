@@ -1,6 +1,5 @@
 import requests
 import re
-import sys 
 from bs4 import BeautifulSoup
 
 class HTTP_requests_parser:
@@ -25,16 +24,13 @@ class HTTP_requests_parser:
           
 
 def search_tandem_word(list_of_word: list) -> list:
-    redex = r"\b([А-Я]{4,})\b"
+    redex = r"\b(\w+)\1\b"
     tandem = []
     for i in list_of_word:
         matched_list = re.findall(redex, i)
         if len(matched_list) > 0:
-            word = matched_list[0]
-            len_word = len(word)
-            if len_word % 2 == 0 and len_word > 0:
-                if word[0:len_word//2] == word[len_word//2:len_word]:
-                    tandem.append(word)
+            word = matched_list[0]*2
+            tandem.append(word)
     return tandem
 
 def get_list_from_file(path: str) -> list:
@@ -43,12 +39,7 @@ def get_list_from_file(path: str) -> list:
     close(fd)
 
 def file():
-    path = ""
-    for i in sys.argv:
-        if ".txt" in i:
-            path = i
-            break
-    words = get_list_from_file(path)
+    words = get_list_from_file("tandem.txt")
     print(search_tandem_word(words))
 
 def main():
