@@ -24,7 +24,7 @@ class HTTP_requests_parser:
           
 
 def search_tandem_word(list_of_word: list) -> list:
-    redex = r"\b(\w+)\1\b"
+    redex = r"\b(\w{2,})\1\b"
     tandem = []
     for i in list_of_word:
         matched_list = re.findall(redex, i)
@@ -53,4 +53,5 @@ def main():
     print(search_tandem_word(site.get_list_of_words()))
 
 if __name__ == "__main__":
+    main()
     file()
