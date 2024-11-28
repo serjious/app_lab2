@@ -1,34 +1,46 @@
 import requests
 import re
 from bs4 import BeautifulSoup
-url = 'https://slovarozhegova.ru/letter.php?charkod=193'
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
-}
+class HTTP_requests_parser:
+    def __init__(self, tag: str):
+        self.__tag = tag
+        self.__urls = []
+    
+    def add_url(self, url: str):
+        self.__urls.append(url)
+    
+    def get_list_of_words(self):
+        words = []
+        for url in self.__urls:
+            response = requests.get(url)
+            soup = BeautifulSoup(response.text, features="html.parser")
+            for i in soup.find_all(self.__tag):
+                words.append(i.text)
+        return words 
+          
+def search_tandem_word(list_of_word: list) -> list:
+    redex = r"\b([А-Я]{4,})\b"
+    tandem = []
+    for i in list_of_word:
+        matched_list = re.findall(redex, i)
+        if len(matched_list) > 0:
+            word = matched_list[0]
+            len_word = len(word)
+            if len_word % 2 == 0 and len_word > 0:
+                if word[0:len_word//2] == word[len_word//2:len_word]:
+                    tandem.append(word)
+    return tandem
 
-tag_name = "strong"
-redex = r"\b([А-Я]{4,})\b"
+def main():
+    url = 'https://slovarozhegova.ru/letter.php?charkod=193'
+    url1 = 'https://slovarozhegova.ru/letter.php?charkod=195'
+    tag_name = "strong"
+    a = ["БАБА", "КИСА"]
+    site = HTTP_requests_parser(tag_name)
+    site.add_url(url)
+    site.add_url(url1)
+    print(search_tandem_word(site.get_list_of_words()))
 
-response = requests.get(url, headers=headers)
-
-if response.status_code != 200:
-    print("Error: ", response.status_code)
-    exit(1)
-soup = BeautifulSoup(response.text, features="html.parser")
-matched = soup.find_all(tag_name)
-
-tandem = []
-for i in matched:
-    matched_list = re.findall(redex, i.text)
-    if len(matched_list) > 0:
-        word = matched_list[0]
-        len_word = len(word)
-        if len_word % 2 == 0 and len_word > 0:
-            if word[0:len_word//2] == word[len_word//2:len_word]:
-                tandem.append(word)
-
-print(tandem)
-#redex = r'<a href="/([а-я].+)/">.+</a>'
-#matched= re.findall(redex, link.text) 
+main()
 
