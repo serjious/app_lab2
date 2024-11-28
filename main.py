@@ -7,8 +7,11 @@ class HTTP_requests_parser:
         self.__tag = tag
         self.__urls = []
     
-    def add_url(self, url: str):
-        self.__urls.append(url)
+    def add_url(self, url):
+        if isinstance(url, str):
+            self.__urls.append(url)
+        elif isinstance(url, list):
+            self.__urls.extend(url)
     
     def get_list_of_words(self):
         words = []
@@ -32,15 +35,23 @@ def search_tandem_word(list_of_word: list) -> list:
                     tandem.append(word)
     return tandem
 
+def get_list_from_file(path: str) -> list:
+    fd = open(path, "r", encoding="utf8")
+    return fd.read().split()
+    close(fd)
+
+def file():
+    words = get_list_from_file("./text.txt")
+    print(search_tandem_word(words))
+
 def main():
-    url = 'https://slovarozhegova.ru/letter.php?charkod=193'
-    url1 = 'https://slovarozhegova.ru/letter.php?charkod=195'
+    url_raw = 'https://slovarozhegova.ru/letter.php?charkod='
+    urls = []
+    for url_id in range(192, 223+1):
+        urls.append(f"{url_raw}{url_id}")
     tag_name = "strong"
-    a = ["БАБА", "КИСА"]
     site = HTTP_requests_parser(tag_name)
-    site.add_url(url)
-    site.add_url(url1)
+    site.add_url(urls)
     print(search_tandem_word(site.get_list_of_words()))
 
-main()
-
+file()
